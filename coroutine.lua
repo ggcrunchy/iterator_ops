@@ -27,10 +27,10 @@
 local ipairs = ipairs
 
 -- Modules --
-local collect = require("array_ops.collect")
+local collect = require("tektite_core.array.collect")
 local iterator_utils = require("iterator_ops.utils")
 local wrapper = require("coroutine_ops.wrapper")
-local wipe = require("array_ops.wipe")
+local wipe = require("tektite_core.array.wipe")
 
 -- Imports --
 local CollectArgsInto_IfAny = collect.CollectArgsInto_IfAny

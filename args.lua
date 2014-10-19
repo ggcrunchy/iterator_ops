@@ -28,10 +28,10 @@ local assert = assert
 local min = math.min
 
 -- Modules --
-local collect = require("array_ops.collect")
+local collect = require("tektite_core.array.collect")
 local iterator_utils = require("iterator_ops.utils")
-local var_preds = require("var_ops.predicates")
-local wipe = require("array_ops.wipe")
+local var_preds = require("tektite_core.var.predicates")
+local wipe = require("tektite_core.array.wipe")
 
 -- Imports --
 local CollectArgsInto = collect.CollectArgsInto

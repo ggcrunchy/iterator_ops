@@ -29,7 +29,7 @@ local min = math.min
 local remove = table.remove
 
 -- Modules --
-local var_preds = require("var_ops.predicates")
+local var_preds = require("tektite_core.var.predicates")
 
 -- Imports --
 local IsCallable = var_preds.IsCallable

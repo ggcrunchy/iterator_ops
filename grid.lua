@@ -29,8 +29,8 @@ local floor = math.floor
 local max = math.max
 
 -- Modules --
-local array_index = require("array_ops.index")
-local divide = require("number_ops.divide")
+local array_index = require("tektite_core.array.index")
+local divide = require("tektite_core.number.divide")
 local iterator_utils = require("iterator_ops.utils")
 
 -- Imports --

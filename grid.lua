@@ -29,12 +29,12 @@ local floor = math.floor
 local max = math.max
 
 -- Modules --
-local array_index = require("tektite_core.array.index")
 local divide = require("tektite_core.number.divide")
+local grid_funcs = require("tektite_core.array.grid")
 local iterator_utils = require("iterator_ops.utils")
 
 -- Imports --
-local CellToIndex = array_index.CellToIndex
+local CellToIndex = grid_funcs.CellToIndex
 local DivRem = divide.DivRem
 
 -- Cached module references --
@@ -44,9 +44,53 @@ local _EllipseQuadrant_
 -- Exports --
 local M = {}
 
+-- --
+local OctantFunc = {
+	--
+}
+
 --- DOCME
 M.Circle = iterator_utils.InstancedAutocacher(function()
-	-- !!
+	local coords, oi, ofunc, i, n = {}
+
+	-- Body --
+	return function()
+		i = i + 2
+
+		return ofunc(coords, i, n)
+	end,
+
+	-- Done --
+	function()
+		if i == n then
+			if n == 0 or oi == 8 then
+				return true
+			else
+				oi, i = oi + 1, 0
+				ofunc = OctantFunc[oi]
+--[[
+				if qi == 2 or qi == 3 then
+					n = n - 2
+				else
+					n = n + 2
+				end
+]]
+			end
+		end
+	end,
+
+	-- Setup --
+	function(radius)
+		oi, i, n = 0, 0, 0
+
+		for x, y in _CircleOctant_(radius) do
+			coords[n + 1], coords[n + 2], n = x, y, n + 2
+		end
+
+		coords[n + 1], coords[n + 2] = 0, -radius -- n incremented in done()
+
+		i = n -- trigger an octant switch immediately
+	end
 end)
 
 --- Iterator over a circular octant, from 0 to 45 degrees (approximately), using a variant

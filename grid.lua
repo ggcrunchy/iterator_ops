@@ -26,12 +26,15 @@
 -- Standard library imports --
 local abs = math.abs
 local floor = math.floor
+local ipairs = ipairs
 local max = math.max
+local min = math.max
 
 -- Modules --
 local divide = require("tektite_core.number.divide")
 local grid_funcs = require("tektite_core.array.grid")
 local iterator_utils = require("iterator_ops.utils")
+local match_slot_id = require("tektite_core.array.match_slot_id")
 
 -- Imports --
 local CellToIndex = grid_funcs.CellToIndex
@@ -428,6 +431,70 @@ M.LineIter = iterator_utils.InstancedAutocacher(function()
 		endx = x2 + xstep
 	end
 end)
+
+--- DOCME
+function M.NewStencil (coords, w, h, layout)
+	--
+	local pos, used, cmin, cmax, rmin, rmax = {}, {}, 0, 0, 0, 0
+
+	for i = 1, #coords, 2 do
+		local col, row = coords[i], coords[i + 1]
+		local id = ("%ix%i"):format(col, row)
+
+		if not used[id] then
+			used[id] = true
+
+			cmin, cmax = min(cmin, col), max(cmax, col)
+			rmin, rmax = min(rmin, row), max(rmax, row)
+
+			pos[#pos + 1] = id
+			pos[#pos + 1] = col
+			pos[#pos + 1] = row
+		end
+	end
+
+	--
+	local cdim, rdim = cmax - cmin + 1, rmax - rmin + 1
+	local cadd, radd = max(1 - cmin, 0), max(1 - rmin, 0)
+
+	for i = 1, #pos, 3 do
+		local col, row = pos[i + 1] + cadd, pos[i + 2] + radd
+
+		pos[i] = (row - 1) * cdim + col
+	end
+
+	local work_wrap, work = match_slot_id.Wrap({}, (cmax + cadd) * (rmax + radd))
+
+	--
+	local Stencil = {}
+
+	--- DOCME
+	function Stencil:GetExtents (midc, midr)
+		midc, midr = midc or 0, midr or 0
+
+		return midc + cmin, midr + rmin, midc + cmax, midr + rmax
+	end
+
+	--- DOCME
+	function Stencil:Iter (col, row)
+		-- Normal
+	end
+
+	--- DOCME
+	-- @function Stencil:Iter_FromTo
+	function Stencil:Iter_FromTo (col1, row1, col2, row2) -- instanced auto?
+		if col1 ~= col2 or row1 ~= row2 then
+			-- work_wrap("begin_generation")
+
+			-- line iter...
+			-- STUFF
+		else
+			-- Normal
+		end
+	end
+
+	return Stencil
+end
 
 do
 	-- Has the (possibly degenerate) triangle been traversed?

@@ -26,15 +26,13 @@
 -- Standard library imports --
 local abs = math.abs
 local floor = math.floor
-local ipairs = ipairs
 local max = math.max
-local min = math.max
 
 -- Modules --
 local divide = require("tektite_core.number.divide")
 local grid_funcs = require("tektite_core.array.grid")
 local iterator_utils = require("iterator_ops.utils")
-local match_slot_id = require("tektite_core.array.match_slot_id")
+local range = require("tektite_core.number.range")
 
 -- Imports --
 local CellToIndex = grid_funcs.CellToIndex
@@ -43,6 +41,7 @@ local DivRem = divide.DivRem
 -- Cached module references --
 local _CircleOctant_
 local _EllipseQuadrant_
+local _LineIter_
 
 -- Exports --
 local M = {}
@@ -432,10 +431,79 @@ M.LineIter = iterator_utils.InstancedAutocacher(function()
 	end
 end)
 
+--
+local AuxStencilIter = iterator_utils.InstancedAutocacher(function()
+	local stencil, cx, cy, pos, n
+
+	-- Body --
+	return function()
+		pos = pos + 2
+
+		return cx + stencil[pos - 1], cy + stencil[pos]
+	end,
+
+	-- Done --
+	function()
+		return pos == n
+	end,
+
+	-- Setup --
+	function(arr, col, row)
+		stencil, cx, cy, pos, n = arr, col, row, 0, #arr
+	end,
+
+	-- Reclaim --
+	function()
+		stencil = nil
+	end
+end)
+
+--
+local AuxStencilIter_FromTo = iterator_utils.InstancedAutocacher(function()
+	local coords, used, n = {}, {}
+
+	-- Body --
+	return function()
+		n, used[coords[n - 2]] = n - 3
+
+		return coords[n + 1], coords[n + 2]
+	end,
+
+	-- Done --
+	function()
+		return n > 0
+	end,
+
+	-- Setup --
+	function(stencil, c1, c2, r1, r2, cdim)
+		n = 0
+
+		local w = abs(c2 - c1) + cdim -- sweep width + stencil width - center pixel
+
+		for cx, cy in _LineIter_(c1, r1, c2, r2) do
+			for i = 1, #stencil, 2 do
+				local col, row = cx + stencil[i], cy + stencil[i + 1]
+				local index = row * w + col
+
+				if not used[index] then
+					coords[n + 1], coords[n + 2], coords[n + 3], n, used[index] = index, col, row, n + 3, true
+				end
+			end
+		end
+	end,
+
+	-- Reclaim --
+	function()
+		while n > 0 do
+			n, used[coords[n - 2]] = n - 3
+		end
+	end
+end)
+
 --- DOCME
-function M.NewStencil (coords, w, h, layout)
+function M.NewStencil (coords)
 	--
-	local pos, used, cmin, cmax, rmin, rmax = {}, {}, 0, 0, 0, 0
+	local pos, used, cmin, cmax, rmin, rmax = {}, {}
 
 	for i = 1, #coords, 2 do
 		local col, row = coords[i], coords[i + 1]
@@ -444,26 +512,15 @@ function M.NewStencil (coords, w, h, layout)
 		if not used[id] then
 			used[id] = true
 
-			cmin, cmax = min(cmin, col), max(cmax, col)
-			rmin, rmax = min(rmin, row), max(rmax, row)
+			cmin, cmax = range.MinMax_New(cmin, cmax, col)
+			rmin, rmax = range.MinMax_New(rmin, rmax, row)
 
-			pos[#pos + 1] = id
 			pos[#pos + 1] = col
 			pos[#pos + 1] = row
 		end
 	end
 
-	--
-	local cdim, rdim = cmax - cmin + 1, rmax - rmin + 1
-	local cadd, radd = max(1 - cmin, 0), max(1 - rmin, 0)
-
-	for i = 1, #pos, 3 do
-		local col, row = pos[i + 1] + cadd, pos[i + 2] + radd
-
-		pos[i] = (row - 1) * cdim + col
-	end
-
-	local work_wrap, work = match_slot_id.Wrap({}, (cmax + cadd) * (rmax + radd))
+	local cdim = cmax - cmin + 1
 
 	--
 	local Stencil = {}
@@ -477,19 +534,16 @@ function M.NewStencil (coords, w, h, layout)
 
 	--- DOCME
 	function Stencil:Iter (col, row)
-		-- Normal
+		return AuxStencilIter(pos, col, row)
 	end
 
 	--- DOCME
 	-- @function Stencil:Iter_FromTo
-	function Stencil:Iter_FromTo (col1, row1, col2, row2) -- instanced auto?
+	function Stencil:Iter_FromTo (col1, row1, col2, row2)
 		if col1 ~= col2 or row1 ~= row2 then
-			-- work_wrap("begin_generation")
-
-			-- line iter...
-			-- STUFF
+			return AuxStencilIter_FromTo(pos, col1, row1, col2, row2, cdim)
 		else
-			-- Normal
+			return AuxStencilIter(pos, col1, row1)
 		end
 	end
 
@@ -609,6 +663,7 @@ end
 -- Cache module members --
 _CircleOctant_ = M.CircleOctant
 _EllipseQuadrant_ = M.EllipseQuadrant
+_LineIter_ = M.LineIter
 
 -- Export the module.
 return M

@@ -250,7 +250,7 @@ M.CircleOctant = iterator_utils.InstancedAutocacher(function()
 
 	-- Setup --
 	function(radius)
-		x, y, diff, dx, dy = radius, 0, 1 - radius, 5 - 2 * radius, 3
+		x, y, diff, dx, dy = radius, 0, 1 - radius, 2 * (radius - 1), 3
 	end
 end)
 
@@ -277,27 +277,8 @@ M.CircleSpans = iterator_utils.InstancedAutocacher(function()
 	end,
 
 	-- Setup --
-	function(radius, width)
-		--
-		local xc, yc, xp, yp, dx = -1, -1, radius, 0, width or 1
-
-		if dx ~= 1 then
-			xp = xp * dx
-		end
-
-		--
+	function(radius)
 		for x, y in _CircleOctant_(radius) do
---[[
-			if x ~= xc then
-				xc, xp = x, xp - dx
-			end
-
-			y = -y
-
-			if y ~= yc then
-				yc, yp = y, yp + dx
-			end
---]]
 			y = -y
 
 			edges[x + 1] = max(edges[x + 1] or 0, y)

@@ -90,58 +90,6 @@ local InitOctantFunc = {
 -- --
 local Coords
 
---
-local function Quad1 (i1, i2)
-	local y1, y2 = Coords[i1], Coords[i2]
-
-	if y1 == y2 then	
-		local x1, x2 = Coords[i1 - 1], Coords[i2 - 1]
-
-		return x1 > x2
-	else
-		return y1 > y2
-	end
-end
-
---
-local function Quad2 (i1, i2)
-	local y1, y2 = Coords[i1], Coords[i2]
-
-	if y1 == y2 then	
-		local x1, x2 = Coords[i1 - 1], Coords[i2 - 1]
-
-		return x1 > x2
-	else
-		return y1 < y2
-	end
-end
-
---
-local function Quad3 (i1, i2)
-	local y1, y2 = Coords[i1], Coords[i2]
-
-	if y1 == y2 then	
-		local x1, x2 = Coords[i1 - 1], Coords[i2 - 1]
-
-		return x1 < x2
-	else
-		return y1 < y2
-	end
-end
-
---
-local function Quad4 (i1, i2)
-	local y1, y2 = Coords[i1], Coords[i2]
-
-	if y1 == y2 then	
-		local x1, x2 = Coords[i1 - 1], Coords[i2 - 1]
-
-		return x1 < x2
-	else
-		return y1 > y2
-	end
-end
-
 -- --
 local SortOctantFunc = {
 	-- (+y, +x) --
@@ -195,6 +143,9 @@ for i, form in ipairs(SortOctantFunc) do
 end
 
 --- DOCME
+-- @function Circle
+-- @uint radius
+-- @treturn iterator X
 M.Circle = iterator_utils.InstancedAutocacher(function()
 	local coords, indices, oi, i, imax, n, prevx, prevy = {}, {}
 
@@ -238,11 +189,29 @@ M.Circle = iterator_utils.InstancedAutocacher(function()
 
 	-- Setup --
 	function(radius)
-		oi, i, imax, n, prevx, prevy = 1, 0, 0, 0
+		i, n = 0, 0
 
-		for x, y in _CircleOctant_(radius) do
-			coords[n + 1], coords[n + 2], n = x, -y, n + 2
-			indices[imax + 1], imax = n, imax + 1
+		--
+		if radius > 1 then
+			oi, imax, prevx, prevy = 1, 0
+
+			for x, y in _CircleOctant_(radius) do
+				coords[n + 1], coords[n + 2], n = x, -y, n + 2
+				indices[imax + 1], imax = n, imax + 1
+			end
+
+		--
+		else
+			if radius == 0 then
+				coords[1], coords[2], indices[1], imax = 0, 0, 2, 1
+			else
+				coords[1], coords[2], indices[1] = 1, 0, 2
+				coords[3], coords[4], indices[2] = 0, 1, 4
+				coords[5], coords[6], indices[3] = -1, 0, 6
+				coords[7], coords[8], indices[4] = 0, -1, 8
+
+				imax = 4
+			end
 		end
 
 		for i = #indices, imax + 1, -1 do
@@ -251,10 +220,10 @@ M.Circle = iterator_utils.InstancedAutocacher(function()
 	end
 end)
 
---- Iterator over a circular octant, from 0 to 45 degrees (approximately), using a variant
--- of the midpoint circle method.
+--- Iterator over the circular octant from 0 to (approximately) 45 degrees, using the
+-- [midpoint circle method](http://en.wikipedia.org/wiki/Midpoint_circle_algorithm).
 -- @function CircleOctant
--- @int radius Circle radius.
+-- @uint radius Circle radius.
 -- @treturn iterator Supplies column, row at each iteration, in order.
 M.CircleOctant = iterator_utils.InstancedAutocacher(function()
 	local x, y, diff, dx, dy
@@ -270,30 +239,18 @@ M.CircleOctant = iterator_utils.InstancedAutocacher(function()
 		end
 
 		diff, dy = diff + dy, dy + 2
---[[
-		if y > 0 then
-			x = x - 1
-			diff = diff + y - x
-
-			if diff < 0 then
-				diff = diff + x
-				x = x + 1
-			end
-		else
-			x = x + 1
-		end]]
 
 		return xwas, -ywas
 	end,
 
 	-- Done --
 	function()
-		return x < y--x <= y
+		return x < y
 	end,
 
 	-- Setup --
 	function(radius)
-		x, y, diff, dx, dy = radius, 0, 1 - radius, 5 - 2 * radius, 3 --radius - 1, -1, 0
+		x, y, diff, dx, dy = radius, 0, 1 - radius, 5 - 2 * radius, 3
 	end
 end)
 
@@ -322,7 +279,7 @@ M.CircleSpans = iterator_utils.InstancedAutocacher(function()
 	-- Setup --
 	function(radius, width)
 		--
-		local xc, yc, xp, yp, dx = -1, 0, radius, 0, width or 1
+		local xc, yc, xp, yp, dx = -1, -1, radius, 0, width or 1
 
 		if dx ~= 1 then
 			xp = xp * dx
@@ -330,16 +287,21 @@ M.CircleSpans = iterator_utils.InstancedAutocacher(function()
 
 		--
 		for x, y in _CircleOctant_(radius) do
+--[[
 			if x ~= xc then
 				xc, xp = x, xp - dx
 			end
 
+			y = -y
+
 			if y ~= yc then
 				yc, yp = y, yp + dx
 			end
+--]]
+			y = -y
 
-			edges[x + 1] = max(edges[x + 1] or 0, yp)
-			edges[y + 1] = max(edges[y + 1] or 0, xp)
+			edges[x + 1] = max(edges[x + 1] or 0, y)
+			edges[y + 1] = max(edges[y + 1] or 0, x)
 		end
 
 		row = -radius

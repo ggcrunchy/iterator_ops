@@ -159,34 +159,40 @@ function M.StencilIter_FromTo (stencil, col1, row1, col2, row2)
 end
 
 --- DOCME
--- @array coords
+-- @tparam ?|array|Stencil coords
 -- @treturn Stencil X
 function M.NewStencil (coords)
-	--
-	local pos, used, cmin, cmax, rmin, rmax = {}, {}
+	local stencil = Stencils[coords]
 
-	for i = 1, #coords, 2 do
-		local col, row = coords[i], coords[i + 1]
-		local id = ("%ix%i"):format(col, row)
+	if not stencil then
+		--
+		local n, pos, used, cmin, cmax, rmin, rmax = #coords, {}, {}
 
-		if not used[id] then
-			used[id] = true
+		assert(n > 0 and n % 2 == 0, "Invalid coordinate count")
 
-			cmin, cmax = range.MinMax_New(cmin, cmax, col)
-			rmin, rmax = range.MinMax_New(rmin, rmax, row)
+		for i = 1, n, 2 do
+			local col, row = coords[i], coords[i + 1]
+			local id = ("%ix%i"):format(col, row)
 
-			pos[#pos + 1] = col
-			pos[#pos + 1] = row
+			if not used[id] then
+				used[id] = true
+
+				cmin, cmax = range.MinMax_New(cmin, cmax, col)
+				rmin, rmax = range.MinMax_New(rmin, rmax, row)
+
+				pos[#pos + 1] = col
+				pos[#pos + 1] = row
+			end
 		end
+
+		--
+		stencil = {}
+
+		pos.cmin, pos.cmax = cmin, cmax
+		pos.rmin, pos.rmax = rmin, rmax
+
+		Stencils[stencil] = pos
 	end
-
-	--
-	local stencil = {}
-
-	pos.cmin, pos.cmax = cmin, cmax
-	pos.rmin, pos.rmax = rmin, rmax
-
-	Stencils[stencil] = pos
 
 	return stencil
 end

@@ -112,7 +112,7 @@ local AuxIter_FromTo = iterator_utils.InstancedAutocacher(function()
 	end,
 
 	-- Setup --
-	function(stencil, c1, r1, c2, r2)
+	function(stencil, c1, r1, c2, r2, skip_first)
 		pos, n = 0, 0
 
 		local w = abs(c2 - c1) + stencil.cmax - stencil.cmin + 1 -- sweep width + stencil width - center pixel
@@ -125,6 +125,10 @@ local AuxIter_FromTo = iterator_utils.InstancedAutocacher(function()
 				if not used[id] then
 					coords[n + 1], coords[n + 2], coords[n + 3], n, used[id] = id, col, row, n + 3, true
 				end
+			end
+
+			if skip_first then
+				pos, skip_first = n
 			end
 		end
 	end,

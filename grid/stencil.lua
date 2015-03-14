@@ -162,9 +162,9 @@ end
 -- @tparam ?|array|Stencil coords
 -- @treturn Stencil X
 function M.NewStencil (coords)
-	local stencil = Stencils[coords]
-
-	if not stencil then
+	if Stencils[coords] then
+		return coords
+	else
 		--
 		local n, pos, used, cmin, cmax, rmin, rmax = #coords, {}, {}
 
@@ -186,15 +186,15 @@ function M.NewStencil (coords)
 		end
 
 		--
-		stencil = {}
+		local stencil = {}
 
 		pos.cmin, pos.cmax = cmin, cmax
 		pos.rmin, pos.rmax = rmin, rmax
 
 		Stencils[stencil] = pos
-	end
 
-	return stencil
+		return stencil
+	end
 end
 
 -- Export the module.

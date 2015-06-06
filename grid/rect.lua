@@ -51,7 +51,7 @@ local M = {}
 -- @treturn iterator Supplies the following, in order, at each iteration:
 --
 -- * Current iteration index.
--- * Array index, as per @{tektite_core.array.index.CellToIndex}.
+-- * Array index, as per @{tektite_core.array.grid.CellToIndex}.
 -- * Column index.
 -- * Row index.
 -- * Cell corner x-coordinate, 0 at _c_ = 1.

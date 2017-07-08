@@ -28,8 +28,6 @@ local abs = math.abs
 local floor = math.floor
 
 -- Modules --
-local divide = require("tektite_core.number.divide")
-local grid_funcs = require("tektite_core.array.grid")
 local iterator_utils = require("iterator_ops.utils")
 
 -- Exports --

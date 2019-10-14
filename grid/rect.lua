@@ -28,16 +28,14 @@ local abs = math.abs
 local max = math.max
 
 -- Modules --
-local divide = require("tektite_core.number.divide")
-local grid_funcs = require("tektite_core.array.grid")
 local iterator_utils = require("iterator_ops.utils")
-
--- Imports --
-local CellToIndex = grid_funcs.CellToIndex
-local DivRem = divide.DivRem
 
 -- Exports --
 local M = {}
+
+--
+--
+--
 
 --- Iterator over a rectangular region on an array-based grid.
 -- @function GridIter
@@ -45,8 +43,6 @@ local M = {}
 -- @uint r1 Row index #1.
 -- @uint c2 Column index #2.
 -- @uint r2 Row index #2.
--- @number dw Uniform cell width.
--- @number dh Uniform cell height.
 -- @uint[opt=max(c1, c2)] ncols Number of columns in a grid row.
 -- @treturn iterator Supplies the following, in order, at each iteration:
 --
@@ -54,39 +50,37 @@ local M = {}
 -- * Array index, as per @{tektite_core.array.grid.CellToIndex}.
 -- * Column index.
 -- * Row index.
--- * Cell corner x-coordinate, 0 at _c_ = 1.
--- * Cell corner y-coordinate, 0 at _r_ = 1.
 -- @see iterator_ops.utils.InstancedAutocacher
 M.GridIter = iterator_utils.InstancedAutocacher(function()
-	local c1, r1, c2, r2, dw, dh, ncols, cw
+	local cbase, cto, col, row, dc, dr, to_cbase
 
 	-- Body --
-	return function(_, i)
-		local dr, dc = DivRem(i, cw)
+	return function(_, cell_index)
+		if col == cto then
+			col, row, cell_index = cbase, row + dr, cell_index + to_cbase
+		else
+			cell_index = cell_index + dc
+		end
 
-		dc = c2 < c1 and -dc or dc
-		dr = r2 < r1 and -dr or dr
+		col = col + dc
 
-		local col = c1 + dc
-		local row = r1 + dr
-
-		return i + 1, CellToIndex(col, row, ncols), col, row, (col - 1) * dw, (row - 1) * dh
+		return cell_index, col, row
 	end,
 
 	-- Done --
-	function(area, i)
-		return i >= area
+	function(last_cell, cell_index)
+		return cell_index == last_cell
 	end,
 
 	-- Setup --
-	function(...)
-		c1, r1, c2, r2, dw, dh, ncols = ...
-		ncols = ncols or max(c1, c2)
-		cw = abs(c2 - c1) + 1
+	function(C1, R1, C2, R2, ncols)
+		dc, dr = C1 < C2 and 1 or -1, R1 < R2 and 1 or -1
+		cbase = C1 - dc -- start each row off-by-one
+		col, cto, ncols, row = cbase, C2, ncols or max(C1, C2), R1
+		to_cbase = dr * (ncols - abs(C2 - C1)) -- spaces from C2 to cbase in next row
 
-		return cw * (abs(r2 - r1) + 1), 0
+		return (R2 - 1) * ncols + C2, (R1 - 1) * ncols + cbase
 	end
 end)
 
--- Export the module.
 return M

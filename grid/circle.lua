@@ -39,6 +39,10 @@ local _CircleOctant_
 local M = {}
 
 --
+--
+--
+
+--
 local function NegateX (coords, n)
 	for i = 1, n, 2 do
 		coords[i] = -coords[i]
@@ -298,8 +302,6 @@ M.CircleSpans = iterator_utils.InstancedAutocacher(function()
 	end
 end)
 
--- Cache module members --
 _CircleOctant_ = M.CircleOctant
 
--- Export the module.
 return M

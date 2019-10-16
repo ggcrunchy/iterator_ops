@@ -44,6 +44,10 @@ local Wrap = wrapper.Wrap
 -- Exports --
 local M = {}
 
+--
+--
+--
+
 --- Builds an instanced autocaching coroutine-based iterator.
 -- @callable func Iterator body.
 -- @callable[opt] on_reset Function called on reset; if **nil**, this is a no-op.
@@ -87,5 +91,4 @@ function M.Iterator (func, on_reset)
 	end)
 end
 
--- Export the module.
 return M

@@ -37,6 +37,10 @@ local IsCallable = var_preds.IsCallable
 -- Exports --
 local M = {}
 
+--
+--
+--
+
 -- Default reclaim: no-op
 local function NoReclaim () end
 
@@ -130,5 +134,4 @@ function M.InstancedAutocacher (builder)
 	end
 end
 
--- Export the module.
 return M

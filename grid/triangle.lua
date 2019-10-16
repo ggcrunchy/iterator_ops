@@ -36,6 +36,10 @@ local DivRem = divide.DivRem
 -- Exports --
 local M = {}
 
+--
+--
+--
+
 -- Has the (possibly degenerate) triangle been traversed?
 local function Done (yend, y)
 	return y and y >= yend
@@ -144,5 +148,4 @@ M.TriangleIter = iterator_utils.InstancedAutocacher(function()
 	end
 end)
 
--- Export the module.
 return M

@@ -35,6 +35,10 @@ local range = require("tektite_core.number.range")
 -- Exports --
 local M = {}
 
+--
+--
+--
+
 -- --
 local Stencils = setmetatable({}, { __mode = "k" })
 
@@ -197,5 +201,4 @@ function M.NewStencil (coords)
 	end
 end
 
--- Export the module.
 return M

@@ -32,6 +32,10 @@ local iterator_utils = require("iterator_ops.utils")
 -- Exports --
 local M = {}
 
+--
+--
+--
+
 --- Iterator which traverses a table as per @{ipairs}, then supplies some item on the
 -- final iteration.
 -- @function IpairsThenItem
@@ -131,5 +135,4 @@ M.ItemThenIpairs = iterator_utils.InstancedAutocacher(function()
 	end
 end)
 
--- Export the module.
 return M

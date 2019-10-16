@@ -33,6 +33,10 @@ local FitToSlot = index_funcs.FitToSlot
 -- Exports --
 local M = {}
 
+--
+--
+--
+
 --- DOCMEMORE
 M.PointToPoint = iterator_utils.InstancedAutocacher(function()
 	local c1, c2, r1, r2
@@ -163,5 +167,4 @@ M.PointToPoint = iterator_utils.InstancedAutocacher(function()
 	end
 end)
 
--- Export the module.
 return M

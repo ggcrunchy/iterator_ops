@@ -35,6 +35,10 @@ local _EllipseQuadrant_
 -- Exports --
 local M = {}
 
+--
+--
+--
+
 -- Per-quadrant coordinate symmetry functions --
 local QuadFunc = {
 	-- (+x, +y) --
@@ -169,8 +173,6 @@ M.EllipseQuadrant = iterator_utils.InstancedAutocacher(function()
 	end
 end)
 
--- Cache module members --
 _EllipseQuadrant_ = M.EllipseQuadrant
 
--- Export the module.
 return M

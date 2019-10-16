@@ -33,6 +33,10 @@ local iterator_utils = require("iterator_ops.utils")
 -- Exports --
 local M = {}
 
+--
+--
+--
+
 --- Iterator over a line on the grid, using [Bresenham's algorithm](http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm).
 -- @function LineIter
 -- @int col1 Start column.
@@ -87,5 +91,4 @@ M.LineIter = iterator_utils.InstancedAutocacher(function()
 	end
 end)
 
--- Export the module.
 return M

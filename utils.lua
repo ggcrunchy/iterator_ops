@@ -25,14 +25,10 @@
 
 -- Standard library imports --
 local assert = assert
-local min = math.min
 local remove = table.remove
 
 -- Modules --
-local var_preds = require("tektite_core.var.predicates")
-
--- Imports --
-local IsCallable = var_preds.IsCallable
+local meta = require("tektite_core.table.meta")
 
 -- Exports --
 local M = {}
@@ -87,10 +83,10 @@ function M.InstancedAutocacher (builder)
 		if not instance then
 			local body, done, setup, reclaim = builder(...)
 
-			assert(IsCallable(body), "Uncallable body function")
-			assert(IsCallable(done), "Uncallable done function")
-			assert(IsCallable(setup), "Uncallable setup function")
-			assert(reclaim == nil or IsCallable(reclaim), "Uncallable reclaim function")
+			assert(meta.CanCall(body), "Uncallable body function")
+			assert(meta.CanCall(done), "Uncallable done function")
+			assert(meta.CanCall(setup), "Uncallable setup function")
+			assert(reclaim == nil or meta.CanCall(reclaim), "Uncallable reclaim function")
 
 			reclaim = reclaim or NoReclaim
 

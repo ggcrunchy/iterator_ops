@@ -26,16 +26,15 @@
 -- Standard library imports --
 local assert = assert
 local min = math.min
+local type = type
 
 -- Modules --
 local collect = require("tektite_core.array.collect")
 local iterator_utils = require("iterator_ops.utils")
-local var_preds = require("tektite_core.var.predicates")
 local wipe = require("tektite_core.array.wipe")
 
 -- Imports --
 local CollectArgsInto = collect.CollectArgsInto
-local IsInteger = var_preds.IsInteger
 local UnpackAndWipeRange = wipe.UnpackAndWipeRange
 local WipeRange = wipe.WipeRange
 
@@ -119,7 +118,7 @@ M.ArgsByN = iterator_utils.InstancedAutocacher(function()
 
 	-- Setup --
 	function(n, ...)
-		assert(IsInteger(n) and n > 0, "Invalid n")
+		assert(type(n) == "number" and n % 1 == 0 and n > 0, "Invalid n")
 
 		count, args = CollectArgsInto(args, ...) 
 

@@ -27,11 +27,7 @@
 local floor = math.floor
 
 -- Modules --
-local divide = require("tektite_core.number.divide")
 local iterator_utils = require("iterator_ops.utils")
-
--- Imports --
-local DivRem = divide.DivRem
 
 -- Exports --
 local M = {}
@@ -48,8 +44,9 @@ end
 -- Helper to get initial values for a given edge
 local function GetValues (edge)
 	local dx, dy = edge.dx, edge.dy
+	local rem = dx % dy
 
-	return dx, dy, DivRem(dx, dy)
+	return dx, dy, (dx - rem) / dy, rem
 end
 
 --- Iterator over a triangle on the grid.

@@ -86,6 +86,10 @@ M.Args = iterator_utils.InstancedAutocacher(function()
 	end
 end)
 
+--
+--
+--
+
 --- Variant of @{Args} which, instead of the _i_-th argument at each iteration, supplies the
 -- _i_-th _n_-sized batch.
 --
@@ -132,5 +136,9 @@ M.ArgsByN = iterator_utils.InstancedAutocacher(function()
 		count = nil
 	end
 end)
+
+--
+--
+--
 
 return M

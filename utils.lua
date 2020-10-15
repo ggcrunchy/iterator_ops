@@ -37,7 +37,6 @@ local M = {}
 --
 --
 
--- Default reclaim: no-op
 local function NoReclaim () end
 
 --- Apparatus for building stateful iterators which recache themselves when iteration
@@ -129,5 +128,9 @@ function M.InstancedAutocacher (builder)
 		return instance(...)
 	end
 end
+
+--
+--
+--
 
 return M

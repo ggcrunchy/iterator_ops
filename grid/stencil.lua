@@ -39,7 +39,6 @@ local M = {}
 --
 --
 
--- --
 local Stencils = setmetatable({}, { __mode = "k" })
 
 --- DOCME
@@ -56,6 +55,10 @@ function M.GetExtents (stencil, midc, midr)
 	return midc + stencil.cmin, midr + stencil.rmin, midc + stencil.cmax, midr + stencil.rmax
 end
 
+--
+--
+--
+
 --- DOCME
 -- @param stencil
 -- @treturn boolean X
@@ -64,6 +67,9 @@ function M.IsStencil (stencil)
 end
 
 --
+--
+--
+
 local AuxIter = iterator_utils.InstancedAutocacher(function()
 	local stencil, cx, cy, pos, n
 
@@ -98,6 +104,10 @@ end)
 function M.StencilIter (stencil, col, row)
 	return AuxIter(assert(Stencils[stencil], "Invalid stencil"), col or 0, row or 0)
 end
+
+--
+--
+--
 
 --
 local AuxIter_FromTo = iterator_utils.InstancedAutocacher(function()
@@ -162,6 +172,10 @@ function M.StencilIter_FromTo (stencil, col1, row1, col2, row2)
 	end
 end
 
+--
+--
+--
+
 --- DOCME
 -- @tparam ?|array|Stencil coords
 -- @treturn Stencil X
@@ -200,5 +214,9 @@ function M.NewStencil (coords)
 		return stencil
 	end
 end
+
+--
+--
+--
 
 return M

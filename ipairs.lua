@@ -87,6 +87,10 @@ M.IpairsThenItem = iterator_utils.InstancedAutocacher(function()
 	end
 end)
 
+--
+--
+--
+
 --- Iterator which supplies some item on the first iteration, then traverses a table as per
 -- @{ipairs}.
 -- @function ItemThenIpairs
@@ -134,5 +138,9 @@ M.ItemThenIpairs = iterator_utils.InstancedAutocacher(function()
 		value, aux, state, var = nil
 	end
 end)
+
+--
+--
+--
 
 return M

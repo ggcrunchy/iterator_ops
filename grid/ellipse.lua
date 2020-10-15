@@ -109,6 +109,10 @@ M.Ellipse = iterator_utils.InstancedAutocacher(function()
 	end
 end)
 
+--
+--
+--
+
 --- DOCME
 -- Compare: https://web.archive.org/web/20120225095359/http://homepage.smc.edu/kennedy_john/belipse.pdf (might be the same algorithm; looks close, anyhow)
 M.EllipseQuadrant = iterator_utils.InstancedAutocacher(function()
@@ -172,6 +176,10 @@ M.EllipseQuadrant = iterator_utils.InstancedAutocacher(function()
 		dline, ddiag = 3 * asqr, init + inc + bsqr
 	end
 end)
+
+--
+--
+--
 
 _EllipseQuadrant_ = M.EllipseQuadrant
 

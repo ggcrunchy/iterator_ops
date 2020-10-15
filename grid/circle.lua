@@ -224,6 +224,10 @@ M.Circle = iterator_utils.InstancedAutocacher(function()
 	end
 end)
 
+--
+--
+--
+
 --- Iterator over the circular octant from 0 to (approximately) 45 degrees, using the
 -- [midpoint circle method](http://en.wikipedia.org/wiki/Midpoint_circle_algorithm).
 -- @function CircleOctant
@@ -257,6 +261,10 @@ M.CircleOctant = iterator_utils.InstancedAutocacher(function()
 		x, y, diff, dx, dy = radius, 0, 1 - radius, 2 * (radius - 1), 3
 	end
 end)
+
+--
+--
+--
 
 --- DOCME
 M.CircleSpans = iterator_utils.InstancedAutocacher(function()
@@ -301,6 +309,10 @@ M.CircleSpans = iterator_utils.InstancedAutocacher(function()
 		end
 	end
 end)
+
+--
+--
+--
 
 _CircleOctant_ = M.CircleOctant
 

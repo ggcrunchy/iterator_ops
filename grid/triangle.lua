@@ -145,4 +145,8 @@ M.TriangleIter = iterator_utils.InstancedAutocacher(function()
 	end
 end)
 
+--
+--
+--
+
 return M
